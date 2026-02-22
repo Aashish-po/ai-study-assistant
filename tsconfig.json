@@ -1,29 +1,23 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "types": [
-      "node",
-      "nativewind/types"
-    ],
+    "jsx": "react-native",
+    "types": ["node", "nativewind/types"],
+    "baseUrl": ".", // ✅ Required for path aliases
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@shared/*": [
-        "./shared/*"
-      ]
-    }
+      "@/*": ["./*"],
+      "@shared/*": ["./shared/*"],
+      "@components/*": ["components/*"]
+    },
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".expo/types/**/*.ts",
     "config/expo-env.d.ts",
     "config/nativewind-env.d.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "exclude": ["node_modules", "dist"]
 }

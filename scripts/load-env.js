@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
+// eslint-disable-next-line no-unused-vars
 const __dirname = path.dirname(__filename);
 
 const envPath = path.resolve(process.cwd(), ".env");

@@ -78,10 +78,12 @@ export type InvokeResult = {
   id: string;
   created: number;
   model: string;
+  // eslint-disable-next-line @typescript-eslint/array-type
   choices: Array<{
     index: number;
     message: {
       role: Role;
+      // eslint-disable-next-line @typescript-eslint/array-type
       content: string | Array<TextContent | ImageContent | FileContent>;
       tool_calls?: ToolCall[];
     };

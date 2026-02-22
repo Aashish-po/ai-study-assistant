@@ -1,1 +1,5 @@
-export { default as useAuth } from './use-auth';
+const useAuth = () => {
+  // your hook logic
+};
+
+export default useAuth;

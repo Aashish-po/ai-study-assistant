@@ -1,4 +1,10 @@
-import { ScrollView, Text, View, TouchableOpacity, FlatList } from "react-native";
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { useState } from "react";
@@ -47,7 +53,7 @@ export default function VoiceExplanationsScreen() {
   const colors = useColors();
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime] = useState(0);
 
   const handlePlayPause = (id: string) => {
     if (playingId === id) {
@@ -83,7 +89,9 @@ export default function VoiceExplanationsScreen() {
           }}
         >
           <IconSymbol
-            name={playingId === item.id ? "paperplane.fill" : "play.circle.fill"}
+            name={
+              playingId === item.id ? "paperplane.fill" : "play.circle.fill"
+            }
             size={24}
             color={playingId === item.id ? "white" : colors.primary}
           />
@@ -95,10 +103,7 @@ export default function VoiceExplanationsScreen() {
           {/* Progress Bar */}
           <View className="mb-3">
             <View className="bg-border rounded-full h-1 overflow-hidden mb-2">
-              <View
-                className="bg-primary h-full"
-                style={{ width: "45%" }}
-              />
+              <View className="bg-primary h-full" style={{ width: "45%" }} />
             </View>
             <View className="flex-row justify-between">
               <Text className="text-xs text-muted">
@@ -116,18 +121,12 @@ export default function VoiceExplanationsScreen() {
                   setPlaybackSpeed(playbackSpeed === 1 ? 1.25 : 1);
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 }}
-                className={`px-3 py-1 rounded-full ${
-                  playbackSpeed === 1.25
-                    ? "bg-primary"
-                    : "bg-border"
-                }`}
+                className={`px-3 py-1 rounded-full ${playbackSpeed === 1.25 ? "bg-primary" : "bg-border"
+                  }`}
               >
                 <Text
-                  className={`text-xs font-semibold ${
-                    playbackSpeed === 1.25
-                      ? "text-white"
-                      : "text-foreground"
-                  }`}
+                  className={`text-xs font-semibold ${playbackSpeed === 1.25 ? "text-white" : "text-foreground"
+                    }`}
                 >
                   {playbackSpeed}x
                 </Text>
@@ -154,7 +153,10 @@ export default function VoiceExplanationsScreen() {
 
   return (
     <ScreenContainer className="p-0">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-background">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        className="bg-background"
+      >
         {/* Header */}
         <View className="flex-row items-center px-6 pt-4 pb-6 border-b border-border">
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
@@ -183,7 +185,8 @@ export default function VoiceExplanationsScreen() {
                   AI Voice Explanations
                 </Text>
                 <Text className="text-sm text-muted">
-                  Listen to detailed explanations of key concepts. Perfect for learning on the go.
+                  Listen to detailed explanations of key concepts. Perfect for
+                  learning on the go.
                 </Text>
               </View>
             </View>

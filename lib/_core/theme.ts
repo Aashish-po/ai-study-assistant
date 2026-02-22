@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default-member */
 import { Platform } from "react-native";
 
 import themeConfig from "@/config/theme.config";

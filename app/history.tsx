@@ -198,9 +198,9 @@ export default function HistoryScreen() {
                 <Text className="font-semibold text-foreground mb-1">
                   Your Progress
                 </Text>
-                <Text className="text-sm text-muted">
-                  You've completed 5 study sessions this week. Keep up the consistency!
-                </Text>
+               <Text className="text-sm text-muted">
+                You&apos;ve completed 5 study sessions this week. Keep up the consistency
+               </Text>
               </View>
             </View>
           </View>

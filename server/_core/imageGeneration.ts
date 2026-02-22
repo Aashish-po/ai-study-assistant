@@ -20,6 +20,7 @@ import { ENV } from "./env";
 
 export type GenerateImageOptions = {
   prompt: string;
+  // eslint-disable-next-line @typescript-eslint/array-type
   originalImages?: Array<{
     url?: string;
     b64Json?: string;

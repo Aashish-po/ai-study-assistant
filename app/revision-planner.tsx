@@ -1,4 +1,10 @@
-import { ScrollView, Text, View, TouchableOpacity, FlatList } from "react-native";
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 
@@ -92,37 +98,25 @@ export default function RevisionPlannerScreen() {
     >
       <View
         className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-          item.completed
-            ? "bg-success border-success"
-            : "border-border"
+          item.completed ? "bg-success border-success" : "border-border"
         }`}
       >
         {item.completed && (
-          <IconSymbol
-            name="checkmark.circle.fill"
-            size={16}
-            color="white"
-          />
+          <IconSymbol name="checkmark.circle.fill" size={16} color="white" />
         )}
       </View>
 
       <View className="flex-1">
-        <Text className={`font-semibold ${item.completed ? "text-muted line-through" : "text-foreground"}`}>
+        <Text
+          className={`font-semibold ${item.completed ? "text-muted line-through" : "text-foreground"}`}
+        >
           {item.topic}
         </Text>
         <View className="flex-row items-center gap-2 mt-1">
-          <IconSymbol
-            name="calendar"
-            size={14}
-            color={colors.muted}
-          />
+          <IconSymbol name="calendar" size={14} color={colors.muted} />
           <Text className="text-xs text-muted">{item.date}</Text>
           <Text className="text-xs text-muted">•</Text>
-          <IconSymbol
-            name="calendar"
-            size={14}
-            color={colors.muted}
-          />
+          <IconSymbol name="calendar" size={14} color={colors.muted} />
           <Text className="text-xs text-muted">{item.duration}</Text>
         </View>
       </View>
@@ -143,7 +137,10 @@ export default function RevisionPlannerScreen() {
 
   return (
     <ScreenContainer className="p-0">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-background">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        className="bg-background"
+      >
         {/* Header */}
         <View className="flex-row items-center px-6 pt-4 pb-6 border-b border-border">
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
@@ -154,7 +151,9 @@ export default function RevisionPlannerScreen() {
               style={{ transform: [{ rotate: "180deg" }] }}
             />
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-foreground">Revision Plan</Text>
+          <Text className="text-2xl font-bold text-foreground">
+            Revision Plan
+          </Text>
         </View>
 
         {/* Main Content */}
@@ -170,9 +169,7 @@ export default function RevisionPlannerScreen() {
                   {EXAM_INFO.daysLeft} Days Left
                 </Text>
               </View>
-              <Text className="text-white/60 text-sm">
-                {EXAM_INFO.date}
-              </Text>
+              <Text className="text-white/60 text-sm">{EXAM_INFO.date}</Text>
             </View>
 
             {/* Progress */}
@@ -185,7 +182,8 @@ export default function RevisionPlannerScreen() {
               />
             </View>
             <Text className="text-white/80 text-xs">
-              {EXAM_INFO.completedTopics}/{EXAM_INFO.totalTopics} topics completed
+              {EXAM_INFO.completedTopics}/{EXAM_INFO.totalTopics} topics
+              completed
             </Text>
           </View>
 
@@ -198,7 +196,7 @@ export default function RevisionPlannerScreen() {
                 color={colors.warning}
               />
               <Text className="font-semibold text-foreground">
-                Today's Goal
+                Today&apos;s Goal
               </Text>
             </View>
             <Text className="text-sm text-muted">
@@ -222,17 +220,14 @@ export default function RevisionPlannerScreen() {
           {/* Smart Tips */}
           <View className="bg-primary/10 border border-primary/30 rounded-xl p-4 mt-6">
             <View className="flex-row items-start gap-3">
-              <IconSymbol
-                name="brain"
-                size={20}
-                color={colors.primary}
-              />
+              <IconSymbol name="brain" size={20} color={colors.primary} />
               <View className="flex-1">
                 <Text className="font-semibold text-foreground mb-1">
                   Smart Revision Tips
                 </Text>
                 <Text className="text-sm text-muted">
-                  Our AI adjusts your schedule based on spaced repetition principles to maximize retention.
+                  Our AI adjusts your schedule based on spaced repetition
+                  principles to maximize retention.
                 </Text>
               </View>
             </View>
