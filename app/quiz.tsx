@@ -1,4 +1,4 @@
- 
+
 import {
   ScrollView,
   Text,
@@ -14,6 +14,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { saveQuizHistoryItem } from "@/lib/quiz-history";
+import { historyService } from "@/services/history.service";
 interface Question {
   id: string;
   question: string;
@@ -61,11 +62,11 @@ export default function QuizScreen() {
   const [quizComplete, setQuizComplete] = useState(false);
   const [sessionSaved, setSessionSaved] = useState(false);
   const question = QUIZ_QUESTIONS[currentQuestion];
-  useEffect(() => {
+   useEffect(() => {
     if (!quizComplete || sessionSaved) return;
 
     const persistQuizSession = async () => {
-      await saveQuizHistoryItem({
+      await historyService.saveQuizAttempt({
         topic: "Photosynthesis",
         score,
         totalQuestions: QUIZ_QUESTIONS.length,
@@ -75,6 +76,7 @@ export default function QuizScreen() {
 
     persistQuizSession();
   }, [quizComplete, score, sessionSaved]);
+
 
   const handleAnswer = (answer: string) => {
     if (answered) return;
@@ -217,27 +219,25 @@ export default function QuizScreen() {
                   <TouchableOpacity
                     onPress={() => handleAnswer(item)}
                     disabled={answered}
-                    className={`rounded-xl p-4 mb-3 border-2 ${
-                      showResult
+                    className={`rounded-xl p-4 mb-3 border-2 ${showResult
                         ? isCorrect
                           ? "border-success bg-success/10"
                           : "border-error bg-error/10"
                         : isSelected
                           ? "border-primary bg-primary/10"
                           : "border-border bg-surface"
-                    }`}
+                      }`}
                   >
                     <View className="flex-row items-center gap-3">
                       <View
-                        className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-                          showResult
+                        className={`w-6 h-6 rounded-full border-2 items-center justify-center ${showResult
                             ? isCorrect
                               ? "border-success bg-success"
                               : "border-error bg-error"
                             : isSelected
                               ? "border-primary bg-primary"
                               : "border-border"
-                        }`}
+                          }`}
                       >
                         {showResult && (
                           <IconSymbol
