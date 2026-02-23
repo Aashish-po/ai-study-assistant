@@ -1,8 +1,3 @@
-Perfect 👍 Below is a **professional, production-ready README** you can directly copy into your repository.
-
-You can paste this into your `README.md` and edit small details as needed.
-
----
 
 # 🎓 AI Study Assistant
 
