@@ -2,40 +2,20 @@
 import "./scripts/load-env.js";
 import type { ExpoConfig } from "expo/config";
 
-// Bundle ID format: space.manus.<project_name_dots>.<timestamp>
-// e.g., "my-app" created at 2024-01-15 10:30:45 -> "space.manus.my.app.t20240115103045"
-// Bundle ID can only contain letters, numbers, and dots
-// Android requires each dot-separated segment to start with a letter
-const rawBundleId = "space.manus.ai_study_assistant.t20260221005945";
-const bundleId =
-  rawBundleId
-    .replace(/[-_]/g, ".") // Replace hyphens/underscores with dots
-    .replace(/[^a-zA-Z0-9.]/g, "") // Remove invalid chars
-    .replace(/\.+/g, ".") // Collapse consecutive dots
-    .replace(/^\.+|\.+$/g, "") // Trim leading/trailing dots
-    .toLowerCase()
-    .split(".")
-    .map((segment) => {
-      // Android requires each segment to start with a letter
-      // Prefix with 'x' if segment starts with a digit
-      return /^[a-zA-Z]/.test(segment) ? segment : "x" + segment;
-    })
-    .join(".") || "space.manus.app";
-// Extract timestamp from bundle ID and prefix with "manus" for deep link scheme
-// e.g., "space.manus.my.app.t20240115103045" -> "manus20240115103045"
-const timestamp = bundleId.split(".").pop()?.replace(/^t/, "") ?? "";
-const schemeFromBundleId = `manus${timestamp}`;
+// ⚡ PRODUCTION BUNDLE ID (short & clean)
+const bundleId = "com.sathi001.studybuddy";
 
+// Deep link / scheme
+const scheme = "studybuddy";
+
+// App branding
 const env = {
-  // App branding - update these values directly (do not use env vars)
   appName: "Study Buddy",
   appSlug: "ai_study_assistant",
-  // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
-  // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/YWEYNWATUTf53S4m7LRrX2/sandbox/4lDRXW3h4Zw4hNx2HZQjHa-img-1_1771653674000_na1fn_aWNvbg.png",
-  scheme: schemeFromBundleId,
+  scheme,
   iosBundleId: bundleId,
   androidPackage: bundleId,
+  logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/YWEYNWATUTf53S4m7LRrX2/sandbox/4lDRXW3h4Zw4hNx2HZQjHa-img-1_1771653674000_na1fn_aWNvbg.png",
 };
 
 const config: ExpoConfig = {
@@ -47,13 +27,15 @@ const config: ExpoConfig = {
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
-    "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
+
   android: {
     adaptiveIcon: {
       backgroundColor: "#E6F4FE",
@@ -79,11 +61,13 @@ const config: ExpoConfig = {
       },
     ],
   },
+
   web: {
     bundler: "metro",
     output: "static",
     favicon: "./assets/images/favicon.png",
   },
+
   plugins: [
     "expo-router",
     [
@@ -121,6 +105,14 @@ const config: ExpoConfig = {
       },
     ],
   ],
+
+  // ⚡ EAS Project ID (required)
+  extra: {
+    eas: {
+      projectId: "fa6a2e23-08ad-44cc-98b6-cce5c27b4ec8",
+    },
+  },
+
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
