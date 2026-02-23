@@ -1,0 +1,10 @@
+<svg width="1400" height="900" viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="900" fill="#0f172a"/>
+  <rect x="60" y="60" width="1280" height="780" rx="20" fill="#1e293b" stroke="#38bdf8" stroke-width="4"/>
+  <text x="100" y="130" fill="#7dd3fc" font-size="44" font-family="Arial">AI Summarization Flow</text>
+  <text x="100" y="185" fill="#e2e8f0" font-size="30" font-family="Arial">Paste notes and generate summary + key points via backend LLM APIs.</text>
+  <circle cx="120" cy="270" r="10" fill="#38bdf8"/><text x="150" y="280" fill="#f8fafc" font-size="28" font-family="Arial">Input study text in the editor</text>
+  <circle cx="120" cy="350" r="10" fill="#38bdf8"/><text x="150" y="360" fill="#f8fafc" font-size="28" font-family="Arial">Tap Generate with AI</text>
+  <circle cx="120" cy="430" r="10" fill="#38bdf8"/><text x="150" y="440" fill="#f8fafc" font-size="28" font-family="Arial">Review concise summary and extracted key points</text>
+  <circle cx="120" cy="510" r="10" fill="#38bdf8"/><text x="150" y="520" fill="#f8fafc" font-size="28" font-family="Arial">Continue into quiz generation</text>
+</svg>
