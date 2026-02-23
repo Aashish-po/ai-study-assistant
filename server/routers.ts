@@ -1,166 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable import/no-unresolved */
 import { z } from "zod";
-import { COOKIE_NAME } from "../shared/const.js";
-import { getSessionCookieOptions } from "./_core/cookies";
-import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
-import * as db from "./db";
-import { invokeLLM } from "./_core/llm";
+import { TRPCError } from "@trpc/server";
+import { router, publicProcedure, protectedProcedure } from "./trpc";
+import { db } from "./db";
+import { invokeLLM } from "./lib/invokeLLM";
 
 export const appRouter = router({
-  system: systemRouter,
-  auth: router({
-    me: publicProcedure.query((opts) => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
-    }),
-  }),
-
-  // Study Materials
-  materials: router({
-    create: protectedProcedure
-      .input(
-        z.object({
-          title: z.string().min(1).max(255),
-          subject: z.string().min(1).max(100),
-          content: z.string().min(1),
-          fileUrl: z.string().optional(),
-        })
-      )
-      .mutation(async ({ ctx, input }) => {
-        try {
-          const materialId = await db.createStudyMaterial({
-            userId: ctx.user.id,
-            title: input.title,
-            subject: input.subject,
-            content: input.content,
-            fileUrl: input.fileUrl,
-          });
-
-          return { materialId, success: true };
-        } catch (error) {
-          console.error("Error creating material:", error);
-          throw error;
-        }
-      }),
-
-    list: protectedProcedure.query(({ ctx }) => {
-      return db.getUserStudyMaterials(ctx.user.id);
-    }),
-
-    get: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => {
-        return db.getStudyMaterial(input.id);
-      }),
-  }),
-
-  // Quiz
-  quiz: router({
-    generateQuestions: protectedProcedure
-      .input(
-        z.object({
-          materialId: z.number(),
-          count: z.number().default(5),
-        })
-      )
-      .mutation(async ({ ctx, input }) => {
-        const material = await db.getStudyMaterial(input.materialId);
-        if (!material) throw new Error("Material not found");
-
-        try {
-          const response = await invokeLLM({
-            messages: [
-              {
-                role: "system",
-                content:
-                  "You are an expert educator. Generate multiple choice questions based on the provided study material.",
-              },
-              {
-                role: "user",
-                content: `Generate ${input.count} MCQ questions from this material:\n\n${material.content}`,
-              },
-            ],
-          });
-
-          return {
-            questions: response.choices[0]?.message?.content || "",
-          };
-        } catch (error) {
-          console.error("Error generating questions:", error);
-          throw error;
-        }
-      }),
-
-    submitSession: protectedProcedure
-      .input(
-        z.object({
-          subject: z.string(),
-          totalQuestions: z.number(),
-          correctAnswers: z.number(),
-          duration: z.number(),
-        })
-      )
-      .mutation(async ({ ctx, input }) => {
-        const score = (input.correctAnswers / input.totalQuestions) * 100;
-        const sessionId = await db.createQuizSession({
-          userId: ctx.user.id,
-          subject: input.subject,
-          totalQuestions: input.totalQuestions,
-          correctAnswers: input.correctAnswers,
-          score: score.toFixed(2),
-          duration: input.duration,
-        });
-
-        return { sessionId, score: score.toFixed(2) };
-      }),
-
-    getSessions: protectedProcedure.query(({ ctx }) => {
-      return db.getUserQuizSessions(ctx.user.id);
-    }),
-  }),
-
-  // Revision Planner
-  revision: router({
-    createPlan: protectedProcedure
-      .input(
-        z.object({
-          examDate: z.date(),
-          subject: z.string(),
-          totalTopics: z.number(),
-        })
-      )
-      .mutation(async ({ ctx, input }) => {
-        const planId = await db.createRevisionPlan({
-          userId: ctx.user.id,
-          examDate: input.examDate,
-          subject: input.subject,
-          totalTopics: input.totalTopics,
-        });
-
-        return { planId };
-      }),
-
-    getPlan: protectedProcedure.query(({ ctx }) => {
-      return db.getUserRevisionPlan(ctx.user.id);
-    }),
-  }),
-
+  // =============================
   // Study Sessions
-  sessions: router({
+  // =============================
+  studySession: router({
     create: protectedProcedure
       .input(
         z.object({
           title: z.string(),
           subject: z.string(),
-          type: z.enum(["quiz", "revision", "voice", "summary"]),
+          type: z.string(),
           duration: z.number(),
           score: z.number().optional(),
-        })
+        }),
       )
       .mutation(async ({ ctx, input }) => {
         const sessionId = await db.createStudySession({
@@ -180,57 +39,133 @@ export const appRouter = router({
     }),
   }),
 
-  // AI Features
+  // =============================
+  // AI Study Features
+  // =============================
   ai: router({
-    generateSummary: publicProcedure
-      .input(z.object({ content: z.string() }))
-      .mutation(async ({ input }) => {
+    generateStudyContent: protectedProcedure
+      .input(
+        z.object({
+          content: z.string().min(10),
+          mode: z.enum(["simple", "exam", "detailed"]).default("simple"),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
         try {
+          // 🔒 Content length protection
+          if (input.content.length > 4000) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Content too long. Maximum 4000 characters allowed.",
+            });
+          }
+
+          // 🔥 (Optional) Usage limit logic placeholder
+          /*
+          const usageToday = await db.getTodayUsage(ctx.user.id);
+          if (usageToday >= 10) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "Daily free limit reached.",
+            });
+          }
+          */
+
+          const modePrompts: Record<
+            "simple" | "exam" | "detailed",
+            string
+          > = {
+            simple:
+              "You are a friendly study assistant who explains topics in simple language suitable for beginners.",
+            exam:
+              "You are an exam preparation expert. Focus on high-yield revision points, definitions, and common exam angles.",
+            detailed:
+              "You are an expert tutor. Provide deep explanations including mechanisms, examples, and contextual understanding.",
+          };
+
           const response = await invokeLLM({
+            model: "gpt-4o-mini",
+            temperature: input.mode === "exam" ? 0.3 : 0.6,
+            max_tokens: 1000,
             messages: [
               {
                 role: "system",
-                content:
-                  "You are an expert study assistant. Create a concise summary highlighting key points.",
+                content: `${modePrompts[input.mode]}
+
+Return output strictly in valid JSON format:
+{
+  "summary": "string",
+  "keyPoints": ["string"],
+  "flashcards": [
+    { "question": "string", "answer": "string" }
+  ]
+}
+
+Do NOT include markdown.
+Do NOT include explanations outside JSON.
+Return ONLY valid JSON.`,
               },
               {
                 role: "user",
-                content: `Summarize this:\n\n${input.content}`,
+                content: `Generate structured study material from the following text:
+
+${input.content}`,
               },
             ],
           });
 
+          const raw = response.choices[0]?.message?.content;
+
+          if (!raw) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Empty AI response.",
+            });
+          }
+
+          let parsed;
+
+          try {
+            parsed = JSON.parse(raw);
+          } catch {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "AI returned invalid JSON.",
+            });
+          }
+
+          if (
+            !parsed.summary ||
+            !Array.isArray(parsed.keyPoints) ||
+            !Array.isArray(parsed.flashcards)
+          ) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Malformed AI response structure.",
+            });
+          }
+
+          // 🔥 (Optional) Track usage
+          /*
+          await db.incrementUsage(ctx.user.id);
+          */
+
           return {
-            summary: response.choices[0]?.message?.content || "",
+            summary: parsed.summary,
+            keyPoints: parsed.keyPoints,
+            flashcards: parsed.flashcards,
           };
         } catch (error) {
-          throw new Error("Failed to generate summary");
-        }
-      }),
+          console.error("AI generation error:", error);
 
-    generateKeyPoints: publicProcedure
-      .input(z.object({ content: z.string() }))
-      .mutation(async ({ input }) => {
-        try {
-          const response = await invokeLLM({
-            messages: [
-              {
-                role: "system",
-                content:
-                  "Extract key points from the provided text. Return as a JSON array of strings.",
-              },
-              {
-                role: "user",
-                content: `Extract key points from:\n\n${input.content}`,
-              },
-            ],
+          if (error instanceof TRPCError) {
+            throw error;
+          }
+
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to generate study content.",
           });
-
-          return {
-            keyPoints: response.choices[0]?.message?.content || "",
-          };
-        } catch (error) {
-          return { keyPoints: [] };
         }
       }),
   }),

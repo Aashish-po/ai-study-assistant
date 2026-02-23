@@ -1,12 +1,19 @@
-import { ScrollView, Text, View, TouchableOpacity, FlatList } from "react-native";
+ 
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-
+import { saveQuizHistoryItem } from "@/lib/quiz-history";
 interface Question {
   id: string;
   question: string;
@@ -32,19 +39,15 @@ const QUIZ_QUESTIONS: Question[] = [
     id: "2",
     question: "Where do the light reactions occur?",
     type: "mcq",
-    options: [
-      "Stroma",
-      "Thylakoid membrane",
-      "Mitochondria",
-      "Nucleus",
-    ],
+    options: ["Stroma", "Thylakoid membrane", "Mitochondria", "Nucleus"],
     correctAnswer: "Thylakoid membrane",
   },
   {
     id: "3",
     question: "Explain the role of chlorophyll in photosynthesis.",
     type: "longform",
-    correctAnswer: "Chlorophyll absorbs light energy and converts it to chemical energy.",
+    correctAnswer:
+      "Chlorophyll absorbs light energy and converts it to chemical energy.",
   },
 ];
 
@@ -56,8 +59,22 @@ export default function QuizScreen() {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [quizComplete, setQuizComplete] = useState(false);
-
+  const [sessionSaved, setSessionSaved] = useState(false);
   const question = QUIZ_QUESTIONS[currentQuestion];
+  useEffect(() => {
+    if (!quizComplete || sessionSaved) return;
+
+    const persistQuizSession = async () => {
+      await saveQuizHistoryItem({
+        topic: "Photosynthesis",
+        score,
+        totalQuestions: QUIZ_QUESTIONS.length,
+      });
+      setSessionSaved(true);
+    };
+
+    persistQuizSession();
+  }, [quizComplete, score, sessionSaved]);
 
   const handleAnswer = (answer: string) => {
     if (answered) return;
@@ -91,13 +108,17 @@ export default function QuizScreen() {
     setScore(0);
     setAnswered(false);
     setQuizComplete(false);
+    setSessionSaved(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   if (quizComplete) {
     return (
       <ScreenContainer className="p-6">
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="justify-center">
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          className="justify-center"
+        >
           <View className="items-center">
             <View className="bg-success/10 rounded-full p-6 mb-6">
               <IconSymbol
@@ -147,7 +168,10 @@ export default function QuizScreen() {
 
   return (
     <ScreenContainer className="p-0">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-background">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        className="bg-background"
+      >
         {/* Header */}
         <View className="px-6 pt-4 pb-6 border-b border-border">
           <View className="flex-row items-center justify-between mb-4">
@@ -199,8 +223,8 @@ export default function QuizScreen() {
                           ? "border-success bg-success/10"
                           : "border-error bg-error/10"
                         : isSelected
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-surface"
+                          ? "border-primary bg-primary/10"
+                          : "border-border bg-surface"
                     }`}
                   >
                     <View className="flex-row items-center gap-3">
@@ -211,13 +235,17 @@ export default function QuizScreen() {
                               ? "border-success bg-success"
                               : "border-error bg-error"
                             : isSelected
-                            ? "border-primary bg-primary"
-                            : "border-border"
+                              ? "border-primary bg-primary"
+                              : "border-border"
                         }`}
                       >
                         {showResult && (
                           <IconSymbol
-                            name={isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"}
+                            name={
+                              isCorrect
+                                ? "checkmark.circle.fill"
+                                : "xmark.circle.fill"
+                            }
                             size={16}
                             color="white"
                           />
@@ -245,7 +273,9 @@ export default function QuizScreen() {
                 />
                 <View className="flex-1">
                   <Text className="font-semibold text-foreground mb-1">
-                    {selectedAnswer === question.correctAnswer ? "Correct!" : "Incorrect"}
+                    {selectedAnswer === question.correctAnswer
+                      ? "Correct!"
+                      : "Incorrect"}
                   </Text>
                   <Text className="text-sm text-muted">
                     The correct answer is: {question.correctAnswer}

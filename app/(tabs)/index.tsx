@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { title } from "node:process";
 
 interface QuickAction {
   id: string;
@@ -49,7 +50,14 @@ const QUICK_ACTIONS: QuickAction[] = [
     color: "#22C55E",
   },
 ];
-
+ {
+    id: "analytics",
+    title: "Analytics",
+    description: "Track adaptive progress",
+    icon: "star.fill",
+    route: "/analytics",
+    color: "#EF4444",
+  },
 interface RecentSession {
   id: string;
   title: string;
