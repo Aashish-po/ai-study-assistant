@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { saveQuizHistoryItem } from "@/lib/quiz-history";
 import { historyService } from "@/services/history.service";
 interface Question {
   id: string;

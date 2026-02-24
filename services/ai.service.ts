@@ -4,6 +4,42 @@ export type Flashcard = {
   answer: string;
 };
 
+export type KeyPoint = {
+  id: string;
+  text: string;
+};
+
+export const PROMPT_MODES = [
+  { value: "simple", label: "Simple" },
+  { value: "exam", label: "Exam" },
+  { value: "detailed", label: "Detailed" },
+] as const;
+
+export const parseKeyPoints = (raw: string): KeyPoint[] => {
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((item, index) => ({
+          id: String(index + 1),
+          text: String(item ?? "").trim(),
+        }))
+        .filter((item) => item.text.length > 0);
+    }
+  } catch {
+    // Fallback to line-based parsing.
+  }
+
+  return raw
+    .split("\n")
+    .map((line) => line.replace(/^[\s\-*•\d.)]+/, "").trim())
+    .filter(Boolean)
+    .map((text, index) => ({
+      id: String(index + 1),
+      text,
+    }));
+};
+
 /**
  * Parses raw AI output into structured flashcards.
  * Supports JSON arrays or simple line-based format.

@@ -7,12 +7,11 @@ import {
   TextInput,
   Alert,
   Platform,
+  Share,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
-import * as Print from "expo-print";
-import * as Sharing from "expo-sharing";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -138,6 +137,35 @@ export default function SummarizationScreen() {
     if (!generatedSummary || generatedSummary === "Generate a summary to get started.") return;
 
     try {
+      const summaryText = [
+        "AI Study Pack",
+        "",
+        "Summary",
+        generatedSummary,
+        "",
+        "Key Points",
+        ...keyPoints.map((item) => `- ${item.text}`),
+      ].join("\n");
+
+      if (Platform.OS === "web" && typeof window !== "undefined" && navigator.share) {
+        await navigator.share({
+          title: "AI Study Pack",
+          text: summaryText,
+        });
+        return;
+      }
+
+      await Share.share({
+        title: "AI Study Pack",
+        message: summaryText,
+      });
+    } catch {
+      Alert.alert("Export failed", "Could not share study pack. Please try again.");
+    }
+  };
+
+  const handlePrintPreview = async () => {
+    try {
       const html = buildStudyPackHtml({
         summary: generatedSummary,
         keyPoints: keyPoints.map((item) => item.text),
@@ -145,23 +173,22 @@ export default function SummarizationScreen() {
       });
 
       if (Platform.OS === "web") {
-        await Print.printAsync({ html });
+        if (typeof window !== "undefined") {
+          const popup = window.open("", "_blank", "noopener,noreferrer,width=900,height=700");
+          if (!popup) {
+            Alert.alert("Popup blocked", "Allow popups to open the print preview.");
+            return;
+          }
+          popup.document.write(html);
+          popup.document.close();
+          popup.focus();
+          popup.print();
+        }
         return;
       }
-
-      const { uri } = await Print.printToFileAsync({ html });
-      const canShare = await Sharing.isAvailableAsync();
-
-      if (canShare) {
-        await Sharing.shareAsync(uri, {
-          mimeType: "application/pdf",
-          dialogTitle: "Save Study Pack PDF",
-        });
-      } else {
-        Alert.alert("PDF created", `Saved PDF at ${uri}`);
-      }
+      Alert.alert("Web only", "Print preview is currently available on web.");
     } catch {
-      Alert.alert("Export failed", "Could not generate PDF. Please try again.");
+      Alert.alert("Preview failed", "Could not open print preview.");
     }
   };
 
@@ -296,11 +323,11 @@ export default function SummarizationScreen() {
 
         {/* Tabs */}
         <View className="flex-row px-6 pt-4 pb-2 border-b border-border">
-          {["summary", "keypoints", "flashcards"].map((tab) => (
+          {(["summary", "keypoints", "flashcards"] as const).map((tab) => (
             <TouchableOpacity
               key={tab}
               onPress={() => {
-                setActiveTab(tab as any);
+                setActiveTab(tab);
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }}
               className={`flex-1 pb-3 px-2 border-b-2 ${
@@ -335,11 +362,19 @@ export default function SummarizationScreen() {
               )}
 
               <TouchableOpacity
+                onPress={handlePrintPreview}
+                className="rounded-xl py-4 px-6 flex-row items-center justify-center mb-3 border border-border"
+              >
+                <IconSymbol name="paperplane.fill" size={18} color={colors.foreground} />
+                <Text className="text-foreground font-semibold ml-2">Print Preview</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={handleSavePdf}
                 className="rounded-xl py-4 px-6 flex-row items-center justify-center mb-3 border border-border"
               >
                 <IconSymbol name="paperplane.fill" size={18} color={colors.foreground} />
-                <Text className="text-foreground font-semibold ml-2">Save as PDF</Text>
+                <Text className="text-foreground font-semibold ml-2">Share Study Pack</Text>
               </TouchableOpacity>
 
               <TouchableOpacity

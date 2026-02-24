@@ -17,6 +17,11 @@ const MAPPING = {
   'bell.fill': 'notifications',
   'gear': 'settings',
   'star.fill': 'star',
+  'lightbulb.fill': 'lightbulb',
+  'brain': 'psychology',
+  'cloud.upload.fill': 'cloud-upload',
+  'doc.text.fill': 'description',
+  'speaker.wave.2.fill': 'volume-up',
 } as const;
 
 type IconSymbolName = keyof typeof MAPPING;
