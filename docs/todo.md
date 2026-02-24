@@ -1,6 +1,7 @@
 # AI Study Assistant - Project TODO
 
 ## Phase 1: Core UI Screens
+
 - [x] Home screen with quick action buttons
 - [x] Upload Notes screen with file picker and text input
 - [x] Summarization screen with key points display
@@ -12,12 +13,14 @@
 - [x] Settings screen with preferences
 
 ## Phase 2: Navigation & Layout
+
 - [ ] Tab bar navigation setup
 - [ ] Screen routing and deep linking
 - [ ] Back button and header navigation
 - [ ] Modal screens for dialogs and forms
 
 ## Phase 3: Backend Integration
+
 - [x] Set up Express server with API routes
 - [x] Configure MySQL database connection
 - [x] Implement JWT authentication
@@ -28,6 +31,7 @@
 - [x] Create API endpoints for revision planner
 
 ## Phase 4: AI Integration
+
 - [ ] Integrate OpenAI API for text summarization
 - [ ] Implement MCQ generation from notes
 - [ ] Implement long-form question generation
@@ -35,6 +39,7 @@
 - [ ] Implement voice explanation generation (text-to-speech)
 
 ## Phase 5: Features Implementation
+
 - [ ] Note upload and storage
 - [ ] AI summarization with key points extraction
 - [ ] Flashcard generation from summaries
@@ -46,6 +51,7 @@
 - [ ] Study session history
 
 ## Phase 6: Authentication & User Management
+
 - [ ] User registration screen
 - [ ] User login screen
 - [ ] JWT token management
@@ -54,6 +60,7 @@
 - [ ] Logout functionality
 
 ## Phase 7: Polish & Testing
+
 - [ ] UI/UX refinement
 - [ ] Dark mode support
 - [ ] Responsive design testing
@@ -64,6 +71,7 @@
 - [ ] End-to-end testing of user flows
 
 ## Phase 8: Deployment
+
 - [ ] Environment configuration
 - [ ] Build optimization
 - [ ] App store preparation

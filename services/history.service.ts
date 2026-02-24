@@ -11,7 +11,7 @@ export type SummaryGenerationInput = {
   input: string;
   summary: string;
   keyPoints: string[];
-  flashcards: Array<{ question: string; answer: string }>;
+  flashcards: { question: string; answer: string }[];
   mode: SummaryMode;
 };
 

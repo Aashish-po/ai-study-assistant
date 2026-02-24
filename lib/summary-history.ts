@@ -2,6 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SUMMARY_HISTORY_KEY = "ai-study-assistant:summary-history";
 
+export type SummaryMode = "simple" | "exam" | "detailed";
+
 export interface SummaryHistoryItem {
   id: string;
   title: string;
@@ -13,6 +15,7 @@ export interface SummaryHistoryItem {
     question: string;
     answer: string;
   }>;
+  mode: SummaryMode;
   timestamp: number;
 }
 
@@ -24,9 +27,15 @@ export async function getSummaryHistory(): Promise<SummaryHistoryItem[]> {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
 
-    return parsed.filter((item) =>
-      item && typeof item.id === "string" && typeof item.input === "string",
-    );
+    return parsed
+      .filter((item) => item && typeof item.id === "string" && typeof item.input === "string")
+      .map((item) => ({
+        ...item,
+        mode:
+          item.mode === "simple" || item.mode === "exam" || item.mode === "detailed"
+            ? item.mode
+            : "simple",
+      }));
   } catch {
     return [];
   }

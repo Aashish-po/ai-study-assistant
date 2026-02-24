@@ -19,13 +19,15 @@ A comprehensive study companion app that leverages AI to help students prepare f
 ## Primary Content and Functionality
 
 ### Home Screen
+
 - **Content**: Welcome message, quick action buttons, recent study sessions
-- **Functionality**: 
+- **Functionality**:
   - Quick access buttons: "Upload Notes", "Start Quiz", "View Revision Plan", "Voice Mode"
   - Display recent documents and study sessions
   - Show study streak and daily goals
 
 ### Upload Notes Screen
+
 - **Content**: File picker, text input area, document preview
 - **Functionality**:
   - Upload PDF, images, or paste text
@@ -34,6 +36,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
   - Trigger AI summarization on upload
 
 ### Summarization Screen
+
 - **Content**: Original notes (collapsible), AI summary, key points list, flashcards
 - **Functionality**:
   - Display AI-generated summary with highlighted key concepts
@@ -43,6 +46,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
   - Bookmark for later review
 
 ### Quiz Screen
+
 - **Content**: Question display, multiple choice options, timer, progress bar
 - **Functionality**:
   - Display MCQs with 4 options
@@ -53,6 +57,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
   - Review answers and explanations
 
 ### Past Paper Prediction Screen
+
 - **Content**: Predicted questions list, confidence scores, topic tags
 - **Functionality**:
   - Display AI-predicted likely exam questions
@@ -62,6 +67,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
   - Track which predictions were correct in actual exams
 
 ### Revision Planner Screen
+
 - **Content**: Calendar view, study schedule, progress bars, milestone tracking
 - **Functionality**:
   - Display personalized study schedule
@@ -71,6 +77,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
   - Show progress toward exam date
 
 ### Voice Explanation Screen
+
 - **Content**: Audio player, transcript, playback controls, speed adjustment
 - **Functionality**:
   - Play AI-generated voice explanations for concepts
@@ -80,6 +87,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
   - Bookmark important explanations
 
 ### Study History Screen
+
 - **Content**: Session list, performance charts, statistics
 - **Functionality**:
   - View all past study sessions with timestamps
@@ -88,6 +96,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
   - Export study reports
 
 ### Settings Screen
+
 - **Content**: Preferences, account info, notifications, app info
 - **Functionality**:
   - Dark/light mode toggle
@@ -98,6 +107,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
 ## Key User Flows
 
 ### Flow 1: Upload and Summarize Notes
+
 1. User taps "Upload Notes" on home screen
 2. Selects file (PDF/image) or pastes text
 3. Selects subject/topic
@@ -106,6 +116,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
 6. User can bookmark, share, or generate quiz from summary
 
 ### Flow 2: Practice Quiz
+
 1. User taps "Start Quiz" on home screen
 2. Selects subject and quiz type (MCQ/Long-form)
 3. App displays questions one by one
@@ -114,6 +125,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
 6. User can review answers and explanations
 
 ### Flow 3: Past Paper Prediction
+
 1. User navigates to "Past Paper Prediction"
 2. Selects exam/subject
 3. Views AI-predicted likely questions with confidence scores
@@ -121,6 +133,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
 5. After exam, user marks which predictions were correct
 
 ### Flow 4: Smart Revision Planning
+
 1. User sets exam date and subjects
 2. App generates personalized revision schedule
 3. User views daily study goals and time allocation
@@ -128,6 +141,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
 5. App adjusts schedule based on progress and spaced repetition principles
 
 ### Flow 5: Voice Explanations
+
 1. User selects a concept or question
 2. Taps "Listen Explanation"
 3. Audio player opens with AI-generated voice explanation
@@ -136,12 +150,14 @@ A comprehensive study companion app that leverages AI to help students prepare f
 ## Color Choices
 
 ### Primary Brand Colors
+
 - **Primary Blue**: `#0a7ea4` - Main action buttons, highlights, accents
 - **Success Green**: `#22C55E` - Correct answers, completed tasks, progress indicators
 - **Warning Orange**: `#F59E0B` - Pending tasks, important reminders
 - **Error Red**: `#EF4444` - Incorrect answers, failed attempts, errors
 
 ### Neutral Colors
+
 - **Background**: `#ffffff` (light) / `#151718` (dark)
 - **Surface**: `#f5f5f5` (light) / `#1e2022` (dark)
 - **Foreground**: `#11181C` (light) / `#ECEDEE` (dark)
@@ -149,6 +165,7 @@ A comprehensive study companion app that leverages AI to help students prepare f
 - **Border**: `#E5E7EB` (light) / `#334155` (dark)
 
 ### Semantic Colors
+
 - **Correct**: `#22C55E` (green) for correct answers
 - **Incorrect**: `#EF4444` (red) for wrong answers
 - **Pending**: `#F59E0B` (orange) for incomplete tasks
