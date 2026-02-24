@@ -18,6 +18,7 @@ const env = {
   logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/YWEYNWATUTf53S4m7LRrX2/sandbox/4lDRXW3h4Zw4hNx2HZQjHa-img-1_1771653674000_na1fn_aWNvbg.png",
 };
 
+ 
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
@@ -118,5 +119,10 @@ const config: ExpoConfig = {
     reactCompiler: false,
   },
 };
-
-export default config;
+export default {
+  ...config,
+  plugins: [
+    ...(config.plugins || []),
+    "expo-asset",
+  ],
+};

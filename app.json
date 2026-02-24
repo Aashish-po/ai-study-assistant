@@ -1,7 +1,0 @@
-{
-  "expo": {
-    "name": "ai-study-assistant",
-    "slug": "ai-study-assistant",
-    "plugins": ["expo-asset"]
-  }
-}
