@@ -1,13 +1,4 @@
- 
- 
-import {
-  ScrollView,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-} from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import * as Haptics from "expo-haptics";
@@ -18,39 +9,8 @@ import { useMemo, useState } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import {
-  processVisionFile,
-  type VisionResult,
-} from "@/services/vision.service";
-import {
-  normalizeVisionMimeType,
-  type VisionFileMimeType,
-} from "@shared/vision";
 
-const SUBJECTS = [
-  "Biology",
-  "Chemistry",
-  "Physics",
-  "Mathematics",
-  "History",
-  "English",
-  "Other",
-];
-
-const inferMimeTypeFromName = (name?: string) => {
-  if (!name) return "application/octet-stream";
-  const lower = name.toLowerCase();
-  if (lower.endsWith(".pdf")) return "application/pdf";
-  if (lower.endsWith(".png")) return "image/png";
-  if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
-  if (lower.endsWith(".webp")) return "image/webp";
-  if (lower.endsWith(".svg")) return "image/svg+xml";
-  if (lower.endsWith(".tif") || lower.endsWith(".tiff")) return "image/tiff";
-  return "application/octet-stream";
-};
-
-const ensureVisionMimeType = (mimeType?: string, name?: string) =>
-  normalizeVisionMimeType(mimeType ?? inferMimeTypeFromName(name));
+const SUBJECTS = ["Biology", "Chemistry", "Physics", "Mathematics", "History", "English", "Other"];
 
 export default function UploadNotesScreen() {
   const router = useRouter();
@@ -72,17 +32,9 @@ export default function UploadNotesScreen() {
     if (!subjectParam) return null;
     return SUBJECTS.includes(subjectParam) ? subjectParam : "Other";
   }, [subjectParam]);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(
-    initialSubject,
-  );
-  const [selectedFile, setSelectedFile] = useState<{
-    uri: string;
-    name: string;
-    type: VisionFileMimeType;
-  } | null>(null);
-  const [notes, setNotes] = useState<string>(
-    suggestedTopic ? `Topic: ${suggestedTopic}\n` : "",
-  );
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(initialSubject);
+  const [fileName, setFileName] = useState<string>("");
+  const [notes, setNotes] = useState<string>(suggestedTopic ? `Topic: ${suggestedTopic}\n` : "");
   const [isLoading, setIsLoading] = useState(false);
   const [visionResult, setVisionResult] = useState<VisionResult | null>(null);
   const [visionError, setVisionError] = useState<string | null>(null);
