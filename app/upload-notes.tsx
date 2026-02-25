@@ -1,3 +1,4 @@
+ 
 import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
@@ -9,8 +10,15 @@ import { useMemo, useState } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { VisionResult, processVisionFile } from "@/services/vision.service";
 
 const SUBJECTS = ["Biology", "Chemistry", "Physics", "Mathematics", "History", "English", "Other"];
+
+type UploadAsset = {
+  uri: string;
+  name: string;
+  type: string;
+};
 
 export default function UploadNotesScreen() {
   const router = useRouter();
@@ -33,7 +41,7 @@ export default function UploadNotesScreen() {
     return SUBJECTS.includes(subjectParam) ? subjectParam : "Other";
   }, [subjectParam]);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(initialSubject);
-  const [fileName, setFileName] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<UploadAsset | null>(null);
   const [notes, setNotes] = useState<string>(suggestedTopic ? `Topic: ${suggestedTopic}\n` : "");
   const [isLoading, setIsLoading] = useState(false);
   const [visionResult, setVisionResult] = useState<VisionResult | null>(null);
@@ -227,7 +235,7 @@ export default function UploadNotesScreen() {
                 {selectedFile?.name ?? "Choose File"}
               </Text>
               <Text className="text-sm text-muted mt-1">
-                {selectedFile ? selectedFile.type : "PDF, Images, or Text"}
+                {selectedFile?.type ?? "PDF, Images, or Text"}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -380,3 +388,24 @@ export default function UploadNotesScreen() {
     </ScreenContainer>
   );
 }
+function ensureVisionMimeType(mimeType: string | undefined, fileName: string): string {
+  if (mimeType) return mimeType;
+
+  const normalized = fileName.trim().toLowerCase();
+
+  if (normalized.endsWith(".pdf")) return "application/pdf";
+  if (normalized.endsWith(".txt")) return "text/plain";
+  if (normalized.endsWith(".doc")) return "application/msword";
+  if (normalized.endsWith(".docx"))
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  if (normalized.endsWith(".pptx"))
+    return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+  if (normalized.endsWith(".jpg") || normalized.endsWith(".jpeg")) return "image/jpeg";
+  if (normalized.endsWith(".png")) return "image/png";
+  if (normalized.endsWith(".webp")) return "image/webp";
+  if (normalized.endsWith(".gif")) return "image/gif";
+  if (normalized.endsWith(".heic")) return "image/heic";
+
+  return "application/octet-stream";
+}
+
