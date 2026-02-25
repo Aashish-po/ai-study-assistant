@@ -1,18 +1,63 @@
-import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
+ 
+ 
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import * as Haptics from "expo-haptics";
+import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
 import { useMemo, useState } from "react";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import {
+  processVisionFile,
+  type VisionResult,
+} from "@/services/vision.service";
+import {
+  normalizeVisionMimeType,
+  type VisionFileMimeType,
+} from "@shared/vision";
 
-const SUBJECTS = ["Biology", "Chemistry", "Physics", "Mathematics", "History", "English", "Other"];
+const SUBJECTS = [
+  "Biology",
+  "Chemistry",
+  "Physics",
+  "Mathematics",
+  "History",
+  "English",
+  "Other",
+];
+
+const inferMimeTypeFromName = (name?: string) => {
+  if (!name) return "application/octet-stream";
+  const lower = name.toLowerCase();
+  if (lower.endsWith(".pdf")) return "application/pdf";
+  if (lower.endsWith(".png")) return "image/png";
+  if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+  if (lower.endsWith(".webp")) return "image/webp";
+  if (lower.endsWith(".svg")) return "image/svg+xml";
+  if (lower.endsWith(".tif") || lower.endsWith(".tiff")) return "image/tiff";
+  return "application/octet-stream";
+};
+
+const ensureVisionMimeType = (mimeType?: string, name?: string) =>
+  normalizeVisionMimeType(mimeType ?? inferMimeTypeFromName(name));
 
 export default function UploadNotesScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ topic?: string | string[]; subject?: string | string[] }>();
+  const params = useLocalSearchParams<{
+    topic?: string | string[];
+    subject?: string | string[];
+  }>();
   const colors = useColors();
   const topicParam = useMemo(() => {
     if (Array.isArray(params.topic)) return params.topic[0] ?? "";
@@ -27,47 +72,128 @@ export default function UploadNotesScreen() {
     if (!subjectParam) return null;
     return SUBJECTS.includes(subjectParam) ? subjectParam : "Other";
   }, [subjectParam]);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(initialSubject);
-  const [fileName, setFileName] = useState<string>("");
-  const [notes, setNotes] = useState<string>(suggestedTopic ? `Topic: ${suggestedTopic}\n` : "");
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(
+    initialSubject,
+  );
+  const [selectedFile, setSelectedFile] = useState<{
+    uri: string;
+    name: string;
+    type: VisionFileMimeType;
+  } | null>(null);
+  const [notes, setNotes] = useState<string>(
+    suggestedTopic ? `Topic: ${suggestedTopic}\n` : "",
+  );
   const [isLoading, setIsLoading] = useState(false);
+  const [visionResult, setVisionResult] = useState<VisionResult | null>(null);
+  const [visionError, setVisionError] = useState<string | null>(null);
 
   const handlePickDocument = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["application/pdf", "image/*", "text/plain"],
+        type: ["application/pdf", "image/*"],
       });
 
-      if (!result.canceled) {
-        const file = result.assets[0];
-        setFileName(file.name);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+      if (result.canceled) return;
+
+      const asset = result.assets[0];
+      if (!asset?.uri) return;
+
+      const fileName = asset.name ?? `document-${Date.now()}`;
+      setSelectedFile({
+        uri: asset.uri,
+        name: fileName,
+        type: ensureVisionMimeType(asset.mimeType, fileName),
+      });
+      setVisionResult(null);
+      setVisionError(null);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error) {
       console.error("Error picking document:", error);
+      setVisionError("Could not read the selected file");
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        setVisionError("Camera access is required to capture a photo");
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
+      if (
+        ("canceled" in result && result.canceled) ||
+        ("cancelled" in result && result.cancelled)
+      ) {
+        return;
+      }
+
+      const asset = result.assets?.[0];
+      if (!asset?.uri) return;
+
+      const fileName = asset.fileName ?? `photo-${Date.now()}.jpg`;
+      setSelectedFile({
+        uri: asset.uri,
+        name: fileName,
+        type: ensureVisionMimeType(asset.mimeType, fileName),
+      });
+      setVisionResult(null);
+      setVisionError(null);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (error) {
+      console.error("Photo capture failed:", error);
+      setVisionError("Could not capture a photo");
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   };
 
   const handleUpload = async () => {
-    if (!selectedSubject || (!fileName && !notes)) {
+    if (!selectedSubject || !selectedFile) {
+      setVisionError("Please pick a subject and attach a file or photo.");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
 
     setIsLoading(true);
+    setVisionError(null);
+    setVisionResult(null);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Simulate upload and processing
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const base64 = await FileSystem.readAsStringAsync(selectedFile.uri, {
+        encoding: "base64",
+      });
+
+      const response = await processVisionFile({
+        fileName: selectedFile.name,
+        mimeType: selectedFile.type,
+        base64,
+        subject: selectedSubject,
+        topic: suggestedTopic || undefined,
+        notes: notes.trim() ? notes : undefined,
+      });
+
+      setVisionResult(response);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.push("/summarization" as any);
-    }, 2000);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Vision processing failed";
+      setVisionError(message);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <ScreenContainer className="p-0">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-background">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        className="bg-background"
+      >
         {/* Header */}
         <View className="flex-row items-center px-6 pt-4 pb-6 border-b border-border">
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
@@ -78,7 +204,9 @@ export default function UploadNotesScreen() {
               style={{ transform: [{ rotate: "180deg" }] }}
             />
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-foreground">Upload Notes</Text>
+          <Text className="text-2xl font-bold text-foreground">
+            Upload Notes
+          </Text>
         </View>
 
         {/* Main Content */}
@@ -88,7 +216,9 @@ export default function UploadNotesScreen() {
               <Text className="text-xs uppercase tracking-wide text-primary font-semibold mb-1">
                 Session Topic
               </Text>
-              <Text className="text-base text-foreground">{suggestedTopic}</Text>
+              <Text className="text-base text-foreground">
+                {suggestedTopic}
+              </Text>
             </View>
           ) : null}
 
@@ -142,12 +272,30 @@ export default function UploadNotesScreen() {
                 color={colors.primary}
               />
               <Text className="text-base font-semibold text-foreground mt-3">
-                {fileName || "Choose File"}
+                {selectedFile?.name ?? "Choose File"}
               </Text>
               <Text className="text-sm text-muted mt-1">
-                PDF, Images, or Text
+                {selectedFile ? selectedFile.type : "PDF, Images, or Text"}
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleTakePhoto}
+              className="mt-3 rounded-2xl border border-primary/40 px-5 py-3 flex-row items-center justify-center gap-2"
+              style={{ backgroundColor: colors.surface }}
+            >
+              <IconSymbol name="camera.fill" size={18} color={colors.primary} />
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: colors.primary }}
+              >
+                Capture Photo
+              </Text>
+            </TouchableOpacity>
+            {visionError ? (
+              <Text className="text-sm mt-3" style={{ color: "#ef4444" }}>
+                {visionError}
+              </Text>
+            ) : null}
           </View>
 
           {/* Or Divider */}
@@ -186,21 +334,75 @@ export default function UploadNotesScreen() {
             {isLoading ? (
               <>
                 <ActivityIndicator color="white" size="small" />
-                <Text className="text-white font-semibold ml-2">Processing...</Text>
+                <Text className="text-white font-semibold ml-2">
+                  Processing...
+                </Text>
               </>
             ) : (
               <>
-                <IconSymbol
-                  name="cloud.upload.fill"
-                  size={20}
-                  color="white"
-                />
+                <IconSymbol name="cloud.upload.fill" size={20} color="white" />
                 <Text className="text-white font-semibold ml-2">
                   Start AI Session
                 </Text>
               </>
             )}
           </TouchableOpacity>
+
+          {visionResult ? (
+            <View className="bg-surface border border-border rounded-2xl p-4 mt-6 space-y-4">
+              <Text className="text-lg font-semibold text-foreground">
+                Vision Summary
+              </Text>
+              <Text className="text-base text-foreground leading-relaxed">
+                {visionResult.summary}
+              </Text>
+              {visionResult.keyPoints.length > 0 ? (
+                <View className="space-y-1">
+                  <Text className="font-semibold text-sm text-foreground">
+                    Key Points
+                  </Text>
+                  {visionResult.keyPoints.map((point, index) => (
+                    <Text
+                      key={`kp-${index}`}
+                      className="text-sm text-foreground"
+                    >
+                      • {point}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
+              {visionResult.takeaways.length > 0 ? (
+                <View className="space-y-1">
+                  <Text className="font-semibold text-sm text-foreground">
+                    Takeaways
+                  </Text>
+                  {visionResult.takeaways.map((takeaway, index) => (
+                    <Text
+                      key={`ta-${index}`}
+                      className="text-sm text-foreground"
+                    >
+                      • {takeaway}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
+              {visionResult.questions.length > 0 ? (
+                <View className="space-y-1">
+                  <Text className="font-semibold text-sm text-foreground">
+                    Practice Questions
+                  </Text>
+                  {visionResult.questions.map((question, index) => (
+                    <Text
+                      key={`q-${index}`}
+                      className="text-sm text-foreground"
+                    >
+                      • {question}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
+            </View>
+          ) : null}
 
           {/* Info Card */}
           <View className="bg-primary/10 border border-primary/30 rounded-xl p-4 mt-6">
@@ -215,7 +417,8 @@ export default function UploadNotesScreen() {
                   AI Summarization
                 </Text>
                 <Text className="text-sm text-muted">
-                  Our AI will analyze your notes and create summaries, key points, and generate practice questions.
+                  Our AI will analyze your notes and create summaries, key
+                  points, and generate practice questions.
                 </Text>
               </View>
             </View>
