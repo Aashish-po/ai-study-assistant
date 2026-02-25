@@ -5,58 +5,6 @@ import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-
-interface QuickAction {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  route: string;
-  color: string;
-}
-
-const QUICK_ACTIONS: QuickAction[] = [
-  {
-    id: "upload",
-    title: "Upload Notes",
-    description: "Add study materials",
-    icon: "cloud.upload.fill",
-    route: "/upload-notes",
-    color: "#0a7ea4",
-  },
-  {
-    id: "quiz",
-    title: "Start Quiz",
-    description: "Practice questions",
-    icon: "pencil.and.list.clipboard",
-    route: "/quiz",
-    color: "#7C3AED",
-  },
-  {
-    id: "revision",
-    title: "Revision Plan",
-    description: "Smart study schedule",
-    icon: "calendar",
-    route: "/revision-planner",
-    color: "#F59E0B",
-  },
-  {
-    id: "voice",
-    title: "Voice Mode",
-    description: "Listen to explanations",
-    icon: "speaker.wave.2.fill",
-    route: "/voice-explanations",
-    color: "#22C55E",
-  },
-  {
-    id: "analytics",
-    title: "Analytics",
-    description: "Track adaptive progress",
-    icon: "star.fill",
-    route: "/analytics",
-    color: "#EF4444",
-  },
-];
 interface RecentSession {
   id: string;
   title: string;
@@ -86,48 +34,10 @@ export default function HomeScreen() {
   const router = useRouter();
   const colors = useColors();
 
-  const handleQuickAction = (route: string) => {
+  const handleStartSession = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push(route as any);
+    router.push("/study-session" as any);
   };
-
-  const renderQuickAction = ({ item }: { item: QuickAction }) => (
-    <TouchableOpacity
-      onPress={() => handleQuickAction(item.route)}
-      style={{
-        transform: [{ scale: 1 }],
-      }}
-      activeOpacity={0.8}
-    >
-      <View className="bg-surface rounded-2xl p-4 mb-3 border border-border">
-        <View className="flex-row items-center gap-3">
-          <View
-            className="rounded-full p-3"
-            style={{ backgroundColor: item.color + "20" }}
-          >
-            <IconSymbol
-              name={item.icon as any}
-              size={24}
-              color={item.color}
-            />
-          </View>
-          <View className="flex-1">
-            <Text className="text-base font-semibold text-foreground">
-              {item.title}
-            </Text>
-            <Text className="text-sm text-muted">
-              {item.description}
-            </Text>
-          </View>
-          <IconSymbol
-            name="chevron.right"
-            size={20}
-            color={colors.muted}
-          />
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
 
   const renderRecentSession = ({ item }: { item: RecentSession }) => (
     <View className="bg-surface rounded-xl p-4 mb-3 border border-border">
@@ -186,17 +96,27 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* Quick Actions */}
+          {/* Study Session Entry */}
           <View className="mb-6">
             <Text className="text-lg font-semibold text-foreground mb-3">
-              Quick Actions
+              Today&apos;s Focus
             </Text>
-            <FlatList
-              data={QUICK_ACTIONS}
-              renderItem={renderQuickAction}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-            />
+            <View className="bg-surface rounded-2xl p-5 border border-border">
+              <Text className="text-base text-muted mb-4">
+                Tell us what you&apos;re studying and AI will guide your full session.
+              </Text>
+              <TouchableOpacity
+                onPress={handleStartSession}
+                className="rounded-xl py-4 px-6 flex-row items-center justify-center"
+                style={{ backgroundColor: colors.primary }}
+              >
+                <IconSymbol name="play.circle.fill" size={20} color="white" />
+                <Text className="text-white font-semibold ml-2">Start Study Session</Text>
+              </TouchableOpacity>
+              <Text className="text-xs text-muted mt-3">
+                Includes summary, quiz generation, and session tracking.
+              </Text>
+            </View>
           </View>
 
           {/* Recent Sessions */}

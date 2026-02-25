@@ -1,8 +1,8 @@
 import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import * as Haptics from "expo-haptics";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -12,10 +12,24 @@ const SUBJECTS = ["Biology", "Chemistry", "Physics", "Mathematics", "History", "
 
 export default function UploadNotesScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ topic?: string | string[]; subject?: string | string[] }>();
   const colors = useColors();
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const topicParam = useMemo(() => {
+    if (Array.isArray(params.topic)) return params.topic[0] ?? "";
+    return params.topic ?? "";
+  }, [params.topic]);
+  const subjectParam = useMemo(() => {
+    if (Array.isArray(params.subject)) return params.subject[0] ?? "";
+    return params.subject ?? "";
+  }, [params.subject]);
+  const suggestedTopic = useMemo(() => topicParam.trim(), [topicParam]);
+  const initialSubject = useMemo(() => {
+    if (!subjectParam) return null;
+    return SUBJECTS.includes(subjectParam) ? subjectParam : "Other";
+  }, [subjectParam]);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(initialSubject);
   const [fileName, setFileName] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
+  const [notes, setNotes] = useState<string>(suggestedTopic ? `Topic: ${suggestedTopic}\n` : "");
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePickDocument = async () => {
@@ -69,6 +83,15 @@ export default function UploadNotesScreen() {
 
         {/* Main Content */}
         <View className="px-6 py-6">
+          {suggestedTopic ? (
+            <View className="bg-primary/10 border border-primary/30 rounded-xl p-4 mb-6">
+              <Text className="text-xs uppercase tracking-wide text-primary font-semibold mb-1">
+                Session Topic
+              </Text>
+              <Text className="text-base text-foreground">{suggestedTopic}</Text>
+            </View>
+          ) : null}
+
           {/* Subject Selection */}
           <View className="mb-6">
             <Text className="text-lg font-semibold text-foreground mb-3">
@@ -173,7 +196,7 @@ export default function UploadNotesScreen() {
                   color="white"
                 />
                 <Text className="text-white font-semibold ml-2">
-                  Upload & Summarize
+                  Start AI Session
                 </Text>
               </>
             )}
