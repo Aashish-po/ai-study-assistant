@@ -19,7 +19,19 @@ export type FileContent = {
   type: "file_url";
   file_url: {
     url: string;
-    mime_type?: "audio/mpeg" | "audio/wav" | "application/pdf" | "audio/mp4" | "video/mp4";
+    mime_type?:
+      | "audio/mpeg"
+      | "audio/wav"
+      | "audio/mp4"
+      | "video/mp4"
+      | "application/pdf"
+      | "image/jpeg"
+      | "image/jpg"
+      | "image/png"
+      | "image/webp"
+      | "image/svg+xml"
+      | "image/tiff"
+      | "image/heic";
   };
 };
 
@@ -63,6 +75,7 @@ export type InvokeParams = {
   output_schema?: OutputSchema;
   responseFormat?: ResponseFormat;
   response_format?: ResponseFormat;
+  model?: string;
 };
 
 export type ToolCall = {
@@ -266,10 +279,11 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     output_schema,
     responseFormat,
     response_format,
+    model,
   } = params;
 
   const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+    model: model ?? "gemini-2.5-flash",
     messages: messages.map(normalizeMessage),
   };
 

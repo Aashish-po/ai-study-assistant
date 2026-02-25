@@ -19,6 +19,7 @@ const MAPPING = {
   'star.fill': 'star',
   'lightbulb.fill': 'lightbulb',
   'brain': 'psychology',
+  'camera.fill': 'photo-camera',
   'cloud.upload.fill': 'cloud-upload',
   'doc.text.fill': 'description',
   'speaker.wave.2.fill': 'volume-up',
