@@ -1,4 +1,3 @@
- 
 import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
@@ -11,6 +10,9 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { VisionResult, processVisionFile } from "@/services/vision.service";
+import Constants from "expo-constants";
+
+
 
 const SUBJECTS = ["Biology", "Chemistry", "Physics", "Mathematics", "History", "English", "Other"];
 
@@ -27,6 +29,15 @@ export default function UploadNotesScreen() {
     subject?: string | string[];
   }>();
   const colors = useColors();
+   //  Access your env variables here
+  import Constants from "expo-constants";
+  const sessionId = Constants.expoConfig.extra?.env?.APP_SESSION_ID;
+  const dbHost = Constants.expoConfig.extra?.env?.DB_HOST;
+
+  console.log("Session ID:", sessionId);
+  console.log("DB Host:", dbHost);
+
+
   const topicParam = useMemo(() => {
     if (Array.isArray(params.topic)) return params.topic[0] ?? "";
     return params.topic ?? "";
