@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-named-as-default-member
 import dotenv from 'dotenv';
 
 import type { ExpoConfig } from 'expo/config';
