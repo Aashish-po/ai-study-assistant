@@ -1,8 +1,7 @@
 {
   "name": "ai-study-assistant",
   "version": "1.0.0",
-  "private": true,
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "dev": "concurrently -k \"npm run dev:server\" \"npm run dev:metro\"",
     "dev:server": "cross-env NODE_ENV=development tsx watch server/_core/index.ts",
@@ -28,7 +27,7 @@
     "@tanstack/react-query": "^5.90.12",
     "@trpc/client": "^11.10.0",
     "@trpc/react-query": "^11.10.0",
-    "@trpc/server": "11.7.2",
+    "@trpc/server": "^11.10.0",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "cookie": "^1.1.1",
@@ -71,7 +70,7 @@
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.16.0",
     "react-native-svg": "15.12.1",
-    "react-native-web": "^0.21.0",
+    "react-native-web": "^0.21.2",
     "react-native-worklets": "0.5.1",
     "superjson": "^1.13.3",
     "tailwind-merge": "^2.6.0",
