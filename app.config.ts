@@ -1,6 +1,15 @@
-// Load environment variables with proper priority (system > .env)
-import "./scripts/load-env.js";
-import type { ExpoConfig } from "expo/config";
+import dotenv from 'dotenv';
+
+import type { ExpoConfig } from 'expo/config';
+dotenv.config();
+
+console.log("APP_SESSION_ID:", process.env.APP_SESSION_ID);
+console.log("DB_HOST:", process.env.DB_HOST);
+console.log("DB_NAME:", process.env.DB_NAME);
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+console.log("FORGE_CLIENT_ID:", process.env.FORGE_CLIENT_ID);
+console.log("FORGE_CLIENT_SECRET:", process.env.FORGE_CLIENT_SECRET);
 
 // ⚡ PRODUCTION BUNDLE ID (short & clean)
 const bundleId = "com.sathi001.studybuddy";
@@ -108,21 +117,29 @@ const config: ExpoConfig = {
   ],
 
   // ⚡ EAS Project ID (required)
-  extra: {
-    eas: {
-      projectId: "fa6a2e23-08ad-44cc-98b6-cce5c27b4ec8",
-    },
+ extra: {
+  eas: {
+    projectId: 'fa6a2e23-08ad-44cc-98b6-cce5c27b4ec8',
   },
+  env: {
+    APP_SESSION_ID: process.env.APP_SESSION_ID,
+    DB_HOST: process.env.DB_HOST,
+    DB_NAME: process.env.DB_NAME,
+    DB_USER: process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    FORGE_CLIENT_ID: process.env.FORGE_CLIENT_ID,
+    FORGE_CLIENT_SECRET: process.env.FORGE_CLIENT_SECRET,
+  },
+},
 
   experiments: {
     typedRoutes: true,
     reactCompiler: false,
   },
 };
-export default {
-  ...config,
-  plugins: [
-    ...(config.plugins || []),
-    "expo-asset",
-  ],
+export default (): ExpoConfig => {
+  return {
+    ...config,
+    plugins: [...(config.plugins || []), "expo-asset"],
+  };
 };
