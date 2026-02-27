@@ -1,17 +1,23 @@
-// eslint-disable-next-line import/no-named-as-default-member
-import dotenv from 'dotenv';
+import 'dotenv/config';
 
-import type { ExpoConfig } from 'expo/config';
-dotenv.config();
-
-console.log("APP_SESSION_ID:", process.env.APP_SESSION_ID);
-console.log("DB_HOST:", process.env.DB_HOST);
-console.log("DB_NAME:", process.env.DB_NAME);
-console.log("DB_USER:", process.env.DB_USER);
-console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
-console.log("FORGE_CLIENT_ID:", process.env.FORGE_CLIENT_ID);
-console.log("FORGE_CLIENT_SECRET:", process.env.FORGE_CLIENT_SECRET);
-
+export default {
+  expo: {
+    name: 'ai_study_assistant',
+    slug: 'ai_study_assistant',
+    scheme: 'studybuddy',
+    extra: {
+      APP_SESSION_ID: process.env.APP_SESSION_ID,
+      DB_HOST: process.env.DB_HOST,
+      DB_NAME: process.env.DB_NAME,
+      DB_USER: process.env.DB_USER,
+      DB_PASSWORD: process.env.DB_PASSWORD,
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    },
+  },
+};
 // ⚡ PRODUCTION BUNDLE ID (short & clean)
 const bundleId = "com.sathi001.studybuddy";
 
