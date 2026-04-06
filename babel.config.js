@@ -3,8 +3,9 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      // If you use Reanimated, ONLY list it once here:
-      // 'react-native-reanimated/plugin', 
+      'nativewind/babel',
+      // Keep this plugin last per Reanimated docs.
+      'react-native-reanimated/plugin',
     ],
   };
 };
