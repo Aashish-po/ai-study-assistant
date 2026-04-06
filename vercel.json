@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "CI=1 NODE_OPTIONS=--experimental-vm-modules npx expo export -p web --output-dir dist --clear",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
     "api/**/*.ts": {
@@ -8,14 +8,17 @@
       "maxDuration": 30
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "handle": "filesystem"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
