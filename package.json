@@ -4,7 +4,7 @@
   "main": "expo-router/entry",
   "scripts": {
     "dev": "npx expo start",
-    "dev:server": "cross-env NODE_ENV=development tsx watch server/_core/index.ts",
+    "dev:server": "cross-env DOTENV_CONFIG_PATH=.env.server.local NODE_ENV=development tsx watch server/_core/index.ts",
     "dev:metro": "cross-env EXPO_USE_METRO_WORKSPACE_ROOT=1 NODE_OPTIONS=--experimental-vm-modules npx expo start --web --port 8081",
     "build": "npx expo export -p web",
     "build:server": "esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
