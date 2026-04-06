@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npx expo export -p web",
+  "buildCommand": "EXPO_USE_METRO_WORKSPACE_ROOT=1 NODE_OPTIONS=--experimental-vm-modules npx expo export -p web --output-dir dist --clear --non-interactive",
   "outputDirectory": "dist",
   "functions": {
     "api/**/*.ts": {
