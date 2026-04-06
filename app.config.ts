@@ -1,58 +1,27 @@
-import 'dotenv/config';
+import "dotenv/config";
+import type { ConfigContext, ExpoConfig } from "expo/config";
 
-export default {
-  expo: {
-    name: 'ai_study_assistant',
-    slug: 'ai_study_assistant',
-    scheme: 'studybuddy',
-    extra: {
-      APP_SESSION_ID: process.env.APP_SESSION_ID,
-      DB_HOST: process.env.DB_HOST,
-      DB_NAME: process.env.DB_NAME,
-      DB_USER: process.env.DB_USER,
-      DB_PASSWORD: process.env.DB_PASSWORD,
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
-      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-      GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    },
-  },
-};
-// ⚡ PRODUCTION BUNDLE ID (short & clean)
 const bundleId = "com.sathi001.studybuddy";
-
-// Deep link / scheme
 const scheme = "studybuddy";
+const projectId = "fa6a2e23-08ad-44cc-98b6-cce5c27b4ec8";
 
-// App branding
-const env = {
-  appName: "Study Buddy",
-  appSlug: "ai_study_assistant",
-  scheme,
-  iosBundleId: bundleId,
-  androidPackage: bundleId,
-  logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/YWEYNWATUTf53S4m7LRrX2/sandbox/4lDRXW3h4Zw4hNx2HZQjHa-img-1_1771653674000_na1fn_aWNvbg.png",
-};
-
- 
-const config: ExpoConfig = {
-  name: env.appName,
-  slug: env.appSlug,
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  name: "Study Buddy",
+  slug: "ai_study_assistant",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
-  scheme: env.scheme,
+  scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
-
   ios: {
     supportsTablet: true,
-    bundleIdentifier: env.iosBundleId,
+    bundleIdentifier: bundleId,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
   },
-
   android: {
     adaptiveIcon: {
       backgroundColor: "#E6F4FE",
@@ -62,7 +31,7 @@ const config: ExpoConfig = {
     },
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
-    package: env.androidPackage,
+    package: bundleId,
     permissions: ["POST_NOTIFICATIONS"],
     intentFilters: [
       {
@@ -70,7 +39,7 @@ const config: ExpoConfig = {
         autoVerify: true,
         data: [
           {
-            scheme: env.scheme,
+            scheme,
             host: "*",
           },
         ],
@@ -78,13 +47,11 @@ const config: ExpoConfig = {
       },
     ],
   },
-
   web: {
     bundler: "metro",
     output: "static",
     favicon: "./assets/images/favicon.png",
   },
-
   plugins: [
     "expo-router",
     [
@@ -121,32 +88,22 @@ const config: ExpoConfig = {
         },
       },
     ],
+    "expo-asset",
   ],
-
-  // ⚡ EAS Project ID (required)
- extra: {
-  eas: {
-    projectId: 'fa6a2e23-08ad-44cc-98b6-cce5c27b4ec8',
+  extra: {
+    eas: {
+      projectId,
+    },
+    EXPO_PUBLIC_OAUTH_PORTAL_URL: process.env.EXPO_PUBLIC_OAUTH_PORTAL_URL,
+    EXPO_PUBLIC_OAUTH_SERVER_URL: process.env.EXPO_PUBLIC_OAUTH_SERVER_URL,
+    EXPO_PUBLIC_APP_ID: process.env.EXPO_PUBLIC_APP_ID,
+    EXPO_PUBLIC_OWNER_OPEN_ID: process.env.EXPO_PUBLIC_OWNER_OPEN_ID,
+    EXPO_PUBLIC_OWNER_NAME: process.env.EXPO_PUBLIC_OWNER_NAME,
+    EXPO_PUBLIC_API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
+    EXPO_PUBLIC_APP_SCHEME: process.env.EXPO_PUBLIC_APP_SCHEME,
   },
-  env: {
-    APP_SESSION_ID: process.env.APP_SESSION_ID,
-    DB_HOST: process.env.DB_HOST,
-    DB_NAME: process.env.DB_NAME,
-    DB_USER: process.env.DB_USER,
-    DB_PASSWORD: process.env.DB_PASSWORD,
-    FORGE_CLIENT_ID: process.env.FORGE_CLIENT_ID,
-    FORGE_CLIENT_SECRET: process.env.FORGE_CLIENT_SECRET,
-  },
-},
-
   experiments: {
     typedRoutes: true,
     reactCompiler: false,
   },
-};
-export default (): ExpoConfig => {
-  return {
-    ...config,
-    plugins: [...(config.plugins || []), "expo-asset"],
-  };
-};
+});

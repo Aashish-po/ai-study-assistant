@@ -1,4 +1,11 @@
-import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import * as Haptics from "expo-haptics";
@@ -10,11 +17,18 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { VisionResult, processVisionFile } from "@/services/vision.service";
-import Constants from "expo-constants";
+import { normalizeVisionMimeType } from "@/shared/vision";
 
-
-
-const SUBJECTS = ["Biology", "Chemistry", "Physics", "Mathematics", "History", "English", "Other"];
+const SUBJECTS = [
+  "Biology",
+  "Chemistry",
+  "Physics",
+  "Mathematics",
+  "History",
+  "English",
+  "Other",
+];
+const ensureVisionMimeType = (value?: string) => normalizeVisionMimeType(value);
 
 type UploadAsset = {
   uri: string;
@@ -29,14 +43,6 @@ export default function UploadNotesScreen() {
     subject?: string | string[];
   }>();
   const colors = useColors();
-   //  Access your env variables here
-  import Constants from "expo-constants";
-  const sessionId = Constants.expoConfig.extra?.env?.APP_SESSION_ID;
-  const dbHost = Constants.expoConfig.extra?.env?.DB_HOST;
-
-  console.log("Session ID:", sessionId);
-  console.log("DB Host:", dbHost);
-
 
   const topicParam = useMemo(() => {
     if (Array.isArray(params.topic)) return params.topic[0] ?? "";
@@ -51,9 +57,13 @@ export default function UploadNotesScreen() {
     if (!subjectParam) return null;
     return SUBJECTS.includes(subjectParam) ? subjectParam : "Other";
   }, [subjectParam]);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(initialSubject);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(
+    initialSubject,
+  );
   const [selectedFile, setSelectedFile] = useState<UploadAsset | null>(null);
-  const [notes, setNotes] = useState<string>(suggestedTopic ? `Topic: ${suggestedTopic}\n` : "");
+  const [notes, setNotes] = useState<string>(
+    suggestedTopic ? `Topic: ${suggestedTopic}\n` : "",
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [visionResult, setVisionResult] = useState<VisionResult | null>(null);
   const [visionError, setVisionError] = useState<string | null>(null);
@@ -73,7 +83,7 @@ export default function UploadNotesScreen() {
       setSelectedFile({
         uri: asset.uri,
         name: fileName,
-        type: ensureVisionMimeType(asset.mimeType, fileName),
+        type: ensureVisionMimeType(asset.mimeType),
       });
       setVisionResult(null);
       setVisionError(null);
@@ -109,7 +119,7 @@ export default function UploadNotesScreen() {
       setSelectedFile({
         uri: asset.uri,
         name: fileName,
-        type: ensureVisionMimeType(asset.mimeType, fileName),
+        type: ensureVisionMimeType(asset.mimeType),
       });
       setVisionResult(null);
       setVisionError(null);
@@ -399,7 +409,10 @@ export default function UploadNotesScreen() {
     </ScreenContainer>
   );
 }
-function ensureVisionMimeType(mimeType: string | undefined, fileName: string): string {
+function ensureVisionMimeType(
+  mimeType: string | undefined,
+  fileName: string,
+): string {
   if (mimeType) return mimeType;
 
   const normalized = fileName.trim().toLowerCase();
@@ -411,7 +424,8 @@ function ensureVisionMimeType(mimeType: string | undefined, fileName: string): s
     return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   if (normalized.endsWith(".pptx"))
     return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-  if (normalized.endsWith(".jpg") || normalized.endsWith(".jpeg")) return "image/jpeg";
+  if (normalized.endsWith(".jpg") || normalized.endsWith(".jpeg"))
+    return "image/jpeg";
   if (normalized.endsWith(".png")) return "image/png";
   if (normalized.endsWith(".webp")) return "image/webp";
   if (normalized.endsWith(".gif")) return "image/gif";
@@ -419,4 +433,3 @@ function ensureVisionMimeType(mimeType: string | undefined, fileName: string): s
 
   return "application/octet-stream";
 }
-
