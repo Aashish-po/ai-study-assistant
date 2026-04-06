@@ -135,16 +135,24 @@ npx expo start
 
 ---
 
-## 🔐 Environment Variables (If Using AI Backend)
+## 🔐 Environment Variables (Client vs Server)
 
-Create a `.env` file:
+This project separates client and server env values so secrets never end up in the app bundle.
 
-```
-OPENAI_API_KEY=your_api_key_here
-```
+### Client (Expo / EAS)
 
-⚠️ Never expose your API key in frontend code.
-Use a backend server for production.
+- Use the template in `.env.example` for local development.
+- Only variables prefixed with `EXPO_PUBLIC_` are safe for the client.
+- Set the same values in EAS Environment Variables for production builds.
+
+### Server (Vercel)
+
+- Use the template in `.env.server.example`.
+- Store these in the Vercel Project Environment Variables (Production + Preview).
+- Do not copy server secrets into the client `.env`.
+
+⚠️ Never expose API keys or database credentials in frontend code.
+Always keep them server-side.
 
 ---
 
