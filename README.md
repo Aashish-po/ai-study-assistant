@@ -154,6 +154,18 @@ This project separates client and server env values so secrets never end up in t
 ⚠️ Never expose API keys or database credentials in frontend code.
 Always keep them server-side.
 
+### Local Development (Client + Server)
+
+```bash
+# Client (Expo)
+cp .env.example .env
+npm run dev
+
+# Server (API)
+cp .env.server.example .env.server.local
+npx cross-env DOTENV_CONFIG_PATH=.env.server.local npm run dev:server
+```
+
 ---
 
 ## 🧪 Future Improvements
