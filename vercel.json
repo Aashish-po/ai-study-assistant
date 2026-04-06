@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "npx expo export -p web",
+  "outputDirectory": "dist",
   "functions": {
     "api/**/*.ts": {
       "runtime": "nodejs20.x",
