@@ -101,7 +101,7 @@
     "vitest": "^4.0.18"
   },
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   },
   "packageManager": "pnpm@9.12.0"
 }
