@@ -1,203 +1,254 @@
-# 🎓 AI Study Assistant
+# AI Study Assistant
 
-An intelligent AI-powered study companion built with **Expo + TypeScript** that helps students understand concepts, generate quizzes, summarize notes, and create smart revision plans.
+> Intelligent tutoring platform powered by AI vision and natural language understanding. Study smarter with real-time document analysis and personalized learning guidance.
 
----
+![GitHub](https://img.shields.io/badge/license-MIT-blue)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 
-## 🚀 Overview
+## 🎯 Overview
 
-AI Study Assistant is designed to help students:
+AI Study Assistant is a full-stack educational technology platform that leverages computer vision and large language models to provide intelligent tutoring support. Upload study materials, ask questions, and receive real-time AI-powered guidance tailored to your learning pace.
 
-* 📚 Upload notes and get AI summaries
-* 🧠 Ask subject-related questions and get clear explanations
-* 📝 Generate MCQs & long-answer questions
-* 📅 Create smart revision plans
-* 📊 Track study progress
+### Key Features
 
-This app aims to make exam preparation faster, smarter, and more structured.
+- **Document Intelligence**: Analyze images, PDFs, and handwritten notes with Google Cloud Vision API
+- **Real-Time Guidance**: Get instant explanations and personalized study tips
+- **OAuth Authentication**: Secure login with Google/GitHub integration
+- **Adaptive Learning**: Track progress and adjust difficulty based on performance
+- **Cross-Platform**: Native mobile experience with React Native/Expo
 
----
+## 🛠️ Tech Stack
 
-## 🛠 Tech Stack
+### Frontend
+- **Framework**: React Native + Expo
+- **State Management**: Redux / Context API
+- **Styling**: Tailwind CSS, NativeWind
+- **UI Components**: Custom + shadcn/ui (web)
 
-* ⚛️ Expo (React Native)
-* 🟦 TypeScript
-* 🔐 Authentication System
-* 🌐 AI API Integration (OpenAI / Gemini / Custom Backend)
-* 📦 Node.js Backend (recommended for secure API handling)
+### Backend
+- **Runtime**: Node.js (v20+)
+- **Framework**: Express.js
+- **RPC Layer**: tRPC (type-safe API)
+- **Database**: MySQL with Drizzle ORM
+- **Authentication**: OAuth 2.0, JWT
 
----
+### AI/ML
+- **Vision**: Google Cloud Vision API
+- **Language Models**: Claude API / Gemini
+- **Document Processing**: PDF parsing, OCR
 
-## ✨ Features
+## 🚀 Getting Started
 
-### 🔐 Authentication
+### Prerequisites
 
-* Secure login & signup
-* User session management
+- Node.js >= 20.19.0 (use `nvm` on Windows)
+- npm or pnpm
+- Google Cloud Vision API key
+- Anthropic API key (for LLM features)
 
-### 🎨 Modern UI
+### Installation
 
-* Custom color schemes
-* Clean student-focused design
-* Responsive layout
+```bash
+# Clone repository
+git clone https://github.com/Aashish-po/ai-study-assistant.git
+cd ai-study-assistant
 
-### 🤖 AI-Powered Tools (Planned / In Progress)
+# Install dependencies
+pnpm install
 
-* AI Chat Tutor
-* Notes Summarizer
-* MCQ Generator
-* Long Question Generator
-* Smart Study Planner
-* Flashcard Generator
+# Setup environment variables
+cp .env.example .env.local
 
----
+# Configure backend server
+# Add OAUTH_SERVER_URL, GOOGLE_CLOUD_API_KEY, ANTHROPIC_API_KEY
 
-## 📱 How It Works
+# Start Metro bundler
+npx expo start
 
-1. User logs into the app
-2. Uploads notes or types a question
-3. AI processes the content
-4. User receives:
+# Open in Expo Go (mobile) or web
+# Press 'w' for web, 'a' for Android emulator, 'i' for iOS Simulator
+```
 
-   * Simplified explanations
-   * Summary
-   * Practice questions
-   * Study plan
+### Environment Variables
 
----
+```env
+# Google Cloud
+GOOGLE_CLOUD_API_KEY=your_api_key_here
 
-## 🧠 Example Use Cases
+# Anthropic
+ANTHROPIC_API_KEY=your_key_here
 
-### Example 1 – Ask a Question
+# OAuth (note: current workaround for OAUTH_SERVER_URL)
+OAUTH_CLIENT_ID=your_google_client_id
+OAUTH_CLIENT_SECRET=your_google_client_secret
+```
 
-Input:
-
-> Explain Newton’s Second Law in simple terms.
-
-Output:
-
-* Clear explanation
-* Formula derivation
-* Numerical example
-* Exam tip
-
----
-
-### Example 2 – Generate MCQs
-
-Input:
-
-> Create 10 MCQs from Thermodynamics chapter.
-
-Output:
-
-* 10 multiple choice questions
-* Answers included
-* Difficulty-based structure
-
----
-
-## 🏗 Project Structure
+## 📁 Project Structure
 
 ```
 ai-study-assistant/
-│
-├── app/                # Screens & navigation
-├── components/         # Reusable UI components
-├── services/           # API calls & AI logic
-├── utils/              # Helper functions
-├── assets/             # Images & icons
-└── backend/ (optional) # Secure AI API handling
+├── frontend/                 # React Native (Expo)
+│   ├── app/                 # App routing & screens
+│   ├── components/          # Reusable components
+│   ├── hooks/               # Custom React hooks
+│   └── utils/               # Helpers & API clients
+├── backend/                 # Node.js/Express + tRPC
+│   ├── routes/              # API endpoints
+│   ├── middleware/          # Auth, logging, etc.
+│   ├── schemas/             # tRPC validators
+│   └── services/            # Business logic
+├── shared/                  # Types & shared logic
+└── docs/                    # Documentation
+
 ```
 
----
+## 🔧 Development
 
-## 🔧 Installation
-
-Clone the repository:
+### Running Tests
 
 ```bash
-git clone https://github.com/Aashish-po/ai-study-assistant.git
-cd ai-study-assistant
+# Backend tests
+npm run test:backend
+
+# Frontend tests
+npm run test:frontend
+
+# Coverage report
+npm run test:coverage
 ```
 
-Install dependencies:
+### Code Quality
 
 ```bash
-npm install
+# Linting
+npm run lint
+
+# Type checking
+npm run type-check
+
+# Format code
+npm run format
 ```
 
-Start the project:
+### Building for Production
 
 ```bash
-npx expo start
+# Web build
+npm run build:web
+
+# Mobile build (Expo)
+eas build --platform all
+
+# Docker build
+docker build -t ai-study-assistant:latest .
 ```
 
----
+## 🎓 Usage Examples
 
-## 🔐 Environment Variables (Client vs Server)
+### Upload & Analyze Document
 
-This project separates client and server env values so secrets never end up in the app bundle.
-
-### Client (Expo / EAS)
-
-- Use the template in `.env.example` for local development.
-- Only variables prefixed with `EXPO_PUBLIC_` are safe for the client.
-- Set the same values in EAS Environment Variables for production builds.
-
-### Server (Vercel)
-
-- Use the template in `.env.server.example`.
-- Store these in the Vercel Project Environment Variables (Production + Preview).
-- Do not copy server secrets into the client `.env`.
-
-⚠️ Never expose API keys or database credentials in frontend code.
-Always keep them server-side.
-
-### Local Development (Client + Server)
-
-```bash
-# Client (Expo)
-cp .env.example .env
-npm run dev
-
-# Server (API)
-cp .env.server.example .env.server.local
-npx cross-env DOTENV_CONFIG_PATH=.env.server.local npm run dev:server
+```javascript
+// Frontend: Select and analyze a study material
+const { uploadDocument } = useStudyAssistant();
+const result = await uploadDocument(imageFile);
+// Returns: { text: "...", analysis: {...} }
 ```
 
----
+### Get AI Guidance
 
-## 🧪 Future Improvements
+```javascript
+// Frontend: Ask for explanation
+const response = await getStudyGuidance({
+  question: "Explain photosynthesis",
+  context: documentContent
+});
+// Returns: personalized explanation with examples
+```
 
-* 📄 PDF upload support
-* 📊 Study analytics dashboard
-* ☁️ Cloud storage integration
-* 🔔 Smart reminders & notifications
-* 🏆 Gamification system
-* 🧠 Adaptive learning based on performance
+## 📊 Architecture
 
----
+```
+Client (React Native)
+        ↓
+  Expo/Metro
+        ↓
+  REST/tRPC API
+        ↓
+Express Server + Middleware
+        ↓
+┌──────────────────────────┐
+│   tRPC Procedures        │
+│  - Document processing   │
+│  - Q&A generation        │
+│  - User management       │
+└──────────────────────────┘
+        ↓
+┌──────────────────────────┐
+│  External Services       │
+│  - Google Vision API     │
+│  - Anthropic Claude API  │
+│  - Google Gemini         │
+└──────────────────────────┘
+        ↓
+   MySQL Database
+```
+
+## 🐛 Known Issues
+
+- **OAUTH_SERVER_URL Warning**: Workaround deployed; full resolution in progress
+- **Metro Bundler on Windows**: Use Node.js v20.19.4 (ESM compatibility)
+- **Tailwind Config**: Ensure `tailwind.config.js` is present in root
+
+See [Issues](https://github.com/Aashish-po/ai-study-assistant/issues) for tracking.
+
+## 📚 Documentation
+
+- [Architecture Guide](./docs/ARCHITECTURE.md)
+- [API Reference](./docs/API.md)
+- [Setup Troubleshooting](./docs/TROUBLESHOOTING.md)
+- [Contributing Guide](./CONTRIBUTING.md)
 
 ## 🤝 Contributing
 
-Contributions are welcome!
+Contributions are welcome! Please follow our [contribution guidelines](./CONTRIBUTING.md).
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Open a Pull Request
+```bash
+# Fork & clone
+git clone https://github.com/your-username/ai-study-assistant.git
+cd ai-study-assistant
 
----
+# Create feature branch
+git checkout -b feature/amazing-feature
+
+# Commit changes
+git commit -m 'Add amazing feature'
+
+# Push & create PR
+git push origin feature/amazing-feature
+```
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License — see [LICENSE](./LICENSE) file for details.
+
+## 🙋 Support
+
+- **Issues**: [GitHub Issues](https://github.com/Aashish-po/ai-study-assistant/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Aashish-po/ai-study-assistant/discussions)
+- **Email**: poudelashish572@gmail.com
+
+## 🔮 Roadmap
+
+- [ ] Offline mode with local LLM support
+- [ ] Video tutorial integration and analysis
+- [ ] Collaborative study sessions (real-time)
+- [ ] Advanced spaced repetition scheduling
+- [ ] Multi-language support (Nepali, Hindi, etc.)
+- [ ] Advanced analytics dashboard
 
 ---
 
-## 🌟 Vision
+**Built with ❤️ by [Aashish Paudel](https://github.com/Aashish-po)**
 
-To build a powerful AI-powered education assistant that helps students study efficiently, understand deeply, and perform better in exams.
-
----
+*Last updated: May 2025 | [View Latest](https://github.com/Aashish-po/ai-study-assistant)*
